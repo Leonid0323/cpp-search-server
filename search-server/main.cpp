@@ -1,11 +1,13 @@
 #include <algorithm>
+#include <cmath>
 #include <iostream>
+#include <map>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-#include <map>
-#include <cmath>
+
+
 
 using namespace std;
 
@@ -51,7 +53,6 @@ struct Document {
 
 class SearchServer {
 public:
-S
     void SetStopWords(const string& text) {
         for (const string& word : SplitIntoWords(text)) {
             stop_words_.insert(word);
@@ -60,8 +61,9 @@ S
 
     void AddDocument(int document_id, const string& document) {
         const vector<string> words = SplitIntoWordsNoStop(document);
+        float one_word_tf = 1./words.size();
         for (const string& word : words){
-            word_to_document_freqs_[word][document_id]+=1./words.size();
+            word_to_document_freqs_[word][document_id] += one_word_tf;
         }
         document_count_++;
     }
@@ -117,7 +119,11 @@ private:
         }
         return query_words;
     }
-
+    
+    double CalculationIDF(int cnt) const {
+        return log(static_cast<double>(document_count_)/cnt);
+    }
+    
     vector<Document> FindAllDocuments(const Query& query_words) const {
         vector<Document> matched_documents;
         map <int, double> relevanced_documents;
@@ -125,7 +131,7 @@ private:
         for (const string& query : query_words.plus) {
             if (word_to_document_freqs_.count(query)){
                 int cnt = word_to_document_freqs_.at(query).size();
-                double idf = log(static_cast<double>(document_count_)/cnt);
+                double idf = CalculationIDF(cnt);
                 for (const auto& [id, tf] : word_to_document_freqs_.at(query)){
                     relevanced_documents[id]+= tf*idf;
                 }
