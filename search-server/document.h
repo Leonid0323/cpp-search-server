@@ -1,5 +1,8 @@
 #pragma once
+#include <iostream>
 
+
+using namespace std::string_literals;
 
 struct Document {
     Document() = default;
@@ -10,3 +13,5 @@ struct Document {
     double relevance = 0.0;
     int rating = 0;
 };
+
+std::ostream&  operator<<(std::ostream& output, const Document& document);

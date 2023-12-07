@@ -19,7 +19,6 @@ void SearchServer::AddDocument(int document_id, const std::string& document, Doc
     document_ids_.push_back(document_id);
 }
 
-
 std::vector<Document> SearchServer::FindTopDocuments(const std::string& raw_query, DocumentStatus status) const {
     return FindTopDocuments(
         raw_query, [status](int document_id, DocumentStatus document_status, int rating) {
